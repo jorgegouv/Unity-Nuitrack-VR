@@ -208,10 +208,9 @@ public class NativeAvatar : MonoBehaviour
 
     private void GuardaPosicaoInicial(Vector3[] coordenadasJoints)
     {
-        posInicial_Y[0] = coordenadasJoints[0].y;   //cabeça
-        posInicial_Y[1] = coordenadasJoints[1].y;   //pescoço
-        posInicial_Y[2] = coordenadasJoints[2].y;   //ombro direito
-        posInicial_Y[3] = coordenadasJoints[3].y;   //ombro esquerdo
+        for(int i=0; i<4;i++){ // cabeça; pescoço; ombro direito; ombro esquerdo
+            posInicial_Y[i] = coordenadasJoints[i].y;
+        }
 
         timerMensagem.text = "Vamos lá!";
         isPosicaoInicialGuardada = true;
