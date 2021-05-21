@@ -9,6 +9,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 [AddComponentMenu("Nuitrack/Example/TranslationAvatar")]
 public class NativeAvatar : MonoBehaviour
@@ -19,7 +20,7 @@ public class NativeAvatar : MonoBehaviour
     GameObject[] CreatedJoint;
     public GameObject PrefabJoint;
 
-    const float scalK = 0.01f;
+    /*const float scalK = 0.01f;
     public bool validaPosicoes = true;
     private float timerLePosicao = 5f;
     public Text TimerPosicaoInicial;
@@ -27,7 +28,15 @@ public class NativeAvatar : MonoBehaviour
 
     Vector3[] PosicoesIniciais = new Vector3[4];
     public bool agachou = false;
-    public int agachamentoCounter = 0;
+    public int agachamentoCounter = 0;*/
+
+    const float scalK = 0.01f;
+    private bool isPosicaoInicialGuardada = false, isAgachado = false;
+    Vector3[] coordenadasJoints = new Vector3[4];
+    public Text timerMensagem, contadorAgachamentos;
+    private float timerComecar = 5f, timerDescanso = 15f;
+    private float[] posInicial_Y;
+    private int agachamentos = 10, serie = 0;
 
     void Start()
     {
@@ -39,7 +48,7 @@ public class NativeAvatar : MonoBehaviour
         }
         message = "Skeleton created";
 
-        TimerPosicaoInicial.text = "Posição Inicial";
+        timerMensagem.text = "Coloque-se na posição inicial!";
 
     }
 
@@ -57,7 +66,39 @@ public class NativeAvatar : MonoBehaviour
                 CreatedJoint[q].transform.localPosition = newPosition;
             }
 
-            Vector3 OmbroDireitoPosition = scalK * skeleton.GetJoint(nuitrack.JointType.RightShoulder).ToVector3();
+            contadorAgachamentos.text = agachamentos.ToString(); //atualiza mensagem dos agachamentos
+
+            coordenadasJoints[0] = scalK * skeleton.GetJoint(nuitrack.JointType.Head).ToVector3();
+            coordenadasJoints[1] = scalK * skeleton.GetJoint(nuitrack.JointType.Neck).ToVector3();
+            coordenadasJoints[2] = scalK * skeleton.GetJoint(nuitrack.JointType.RightShoulder).ToVector3();
+            coordenadasJoints[3] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftShoulder).ToVector3();
+
+            if(!isPosicaoInicialGuardada){ //inicia a contagem decrescente para guardar a posição inicial e iniciar o exercício
+                timerComecar -= Time.deltaTime;;
+                timerMensagem.text = timerComecar.ToString();
+                
+                if(timerComecar <0)
+                    GuardaPosicaoInicial(coordenadasJoints);
+
+                return;
+            }
+            
+            if(agachamentos > 0)
+            {
+                VerificaAgachamento(coordenadasJoints);
+
+                if(isAgachado){
+                    ContaAgachamento(coordenadasJoints);
+                }
+            }
+            else{
+                serie++;
+                DescansaProximaSerie();
+                
+            }
+
+
+            /*Vector3 OmbroDireitoPosition = scalK * skeleton.GetJoint(nuitrack.JointType.RightShoulder).ToVector3();
             Vector3 OmbroEsquerdoPosition = scalK * skeleton.GetJoint(nuitrack.JointType.LeftShoulder).ToVector3();
 
             Vector3 PescocoPosition = scalK * skeleton.GetJoint(nuitrack.JointType.Neck).ToVector3();
@@ -81,7 +122,7 @@ public class NativeAvatar : MonoBehaviour
             }
             else
             {
-                float distAgachamentoOmbroDireito = PosicoesIniciais[0].y - OmbroDireitoPosition.y;/*Vector3.Distance(PosicoesIniciais[0], OmbroDireitoPosition);*/
+                float distAgachamentoOmbroDireito = PosicoesIniciais[0].y - OmbroDireitoPosition.y;
                 float distAgachamentoOmbroEsquerdo = PosicoesIniciais[1].y - OmbroEsquerdoPosition.y;
 
                 float distAgachamentoPescoco = PosicoesIniciais[2].y - PescocoPosition.y;
@@ -112,14 +153,71 @@ public class NativeAvatar : MonoBehaviour
             print("Direito: " + OmbroDireitoPosition);
             print("Esquerdo: " + OmbroEsquerdoPosition);
             print("Pescoco: " + PescocoPosition);
-            print("Cabeca: " + CabecaPosition);
+            print("Cabeca: " + CabecaPosition);*/
 
         }
         else
         {
-            message = "Skeleton not found";
+            message = "Skeleton not found!";
         }
     }
+
+    private void DescansaProximaSerie()
+    {
+        if(serie == 3)
+            contadorAgachamentos.text = "Acabou o exercício!";
+        else {
+            contadorAgachamentos.text = "Terminas-te a " + serie + "ª série!";
+
+            timerDescanso -= Time.deltaTime;;
+            timerMensagem.text = timerComecar.ToString();
+            if(timerDescanso < 0)
+            {
+                timerMensagem.text = "Vamos lá!";
+                agachamentos = 10;
+            }
+        }
+    }
+
+    private void ContaAgachamento(Vector3[] coordenadasJoints)
+    {
+        //calcula se voltou as unidades iniciais
+        for(int i=0; i<4;i++){
+            float posDelta = posInicial_Y[i] - coordenadasJoints[i].y;
+            
+            if(posDelta > 0.5f)
+                return;
+        }
+        
+        isAgachado = false;
+        agachamentos--;
+    }
+
+    private void VerificaAgachamento(Vector3[] coordenadasJoints)
+    {
+        //calcula quantas unidades desceu
+        for(int i=0; i<4;i++){
+            float posDelta = posInicial_Y[i] - coordenadasJoints[i].y;
+            
+            if(posDelta < 3.0f)
+                return;
+        }
+        
+        isAgachado = true;
+    }
+
+    private void GuardaPosicaoInicial(Vector3[] coordenadasJoints)
+    {
+        posInicial_Y[0] = coordenadasJoints[0].y;   //cabeça
+        posInicial_Y[1] = coordenadasJoints[1].y;   //pescoço
+        posInicial_Y[2] = coordenadasJoints[2].y;   //ombro direito
+        posInicial_Y[3] = coordenadasJoints[3].y;   //ombro esquerdo
+
+        timerMensagem.text = "Vamos lá!";
+        isPosicaoInicialGuardada = true;
+    }
+
+
 
     // Display the message on the screen
     void OnGUI()
