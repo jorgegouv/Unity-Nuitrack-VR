@@ -12,7 +12,7 @@ using UnityEngine.UI;
 using System;
 
 [AddComponentMenu("Nuitrack/Example/TranslationAvatar")]
-public class NativeAvatar : MonoBehaviour
+public class CodigoPesoMorto : MonoBehaviour
 {
     string message = "";
 
@@ -37,7 +37,7 @@ public class NativeAvatar : MonoBehaviour
 
     const float scalK = 0.01f;
     private bool isPosicaoInicialGuardada = false, isAgachado = false;
-    Vector3[] coordenadasJoints = new Vector3[4];
+    Vector3[] coordenadasJoints = new Vector3[6];
     public Text timerMensagem, contadorAgachamentos;
     private float timerComecar = 5f;
     
@@ -77,12 +77,30 @@ public class NativeAvatar : MonoBehaviour
 
             contadorAgachamentos.text = agachamentos.ToString(); //atualiza mensagem dos agachamentos
 
-            coordenadasJoints[0] = scalK * skeleton.GetJoint(nuitrack.JointType.Head).ToVector3();
+            coordenadasJoints[0] = scalK * skeleton.GetJoint(nuitrack.JointType.Torso).ToVector3();
             coordenadasJoints[1] = scalK * skeleton.GetJoint(nuitrack.JointType.Neck).ToVector3();
-            coordenadasJoints[2] = scalK * skeleton.GetJoint(nuitrack.JointType.RightShoulder).ToVector3();
-            coordenadasJoints[3] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftShoulder).ToVector3();
+            coordenadasJoints[2] = scalK * skeleton.GetJoint(nuitrack.JointType.RightHip).ToVector3();
+            coordenadasJoints[3] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftAnkle).ToVector3();
+            coordenadasJoints[4] = scalK * skeleton.GetJoint(nuitrack.JointType.RightWrist).ToVector3();
+            coordenadasJoints[5] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftWrist).ToVector3();
+            
+            print("PERNA DIREITA: " + coordenadasJoints[2]);
+            print("CABECA: " + coordenadasJoints[0]);
+            print("bRACO: " + coordenadasJoints[4]);
+        }
+    }
 
-            if(!isPosicaoInicialGuardada){ //inicia a contagem decrescente para guardar a posição inicial e iniciar o exercício
+
+
+
+
+
+
+
+
+
+
+            /*if(!isPosicaoInicialGuardada){ //inicia a contagem decrescente para guardar a posição inicial e iniciar o exercício
                 timerComecar -= Time.deltaTime;;
                 timerMensagem.text = timerComecar.ToString();
                 
@@ -167,7 +185,7 @@ public class NativeAvatar : MonoBehaviour
 
         timerMensagem.text = "Vamos lá!";
         isPosicaoInicialGuardada = true;
-    }
+    }*/
 
 
 
