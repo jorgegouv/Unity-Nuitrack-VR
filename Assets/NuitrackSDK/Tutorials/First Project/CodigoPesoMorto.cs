@@ -74,7 +74,7 @@ public class CodigoPesoMorto : MonoBehaviour
             coordenadasJoints[2] = scalK * skeleton.GetJoint(nuitrack.JointType.RightShoulder).ToVector3(); //ombro direito
             coordenadasJoints[3] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftShoulder).ToVector3(); //ombro esquerdo
             coordenadasJoints[4] = scalK * skeleton.GetJoint(nuitrack.JointType.Torso).ToVector3(); //torso
-            coordenadasJoints[5] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftElbow).ToVector3(); //braco direito
+            coordenadasJoints[5] = scalK * skeleton.GetJoint(nuitrack.JointType.RightElbow).ToVector3(); //braco direito
             coordenadasJoints[6] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftElbow).ToVector3(); //braco esquerdo
            
             coordenadasJoints[7] = scalK * skeleton.GetJoint(nuitrack.JointType.RightKnee).ToVector3(); //joelho direito
