@@ -155,8 +155,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -15}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -6.5, y: -35.6}
+  m_SizeDelta: {x: 507.8443, y: 47.89569}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &140288130
 MonoBehaviour:
@@ -184,7 +184,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 0
+    m_Alignment: 1
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -418,7 +418,7 @@ GameObject:
   - component: {fileID: 1091721439}
   - component: {fileID: 1091721438}
   m_Layer: 5
-  m_Name: Agachamentos
+  m_Name: Repeticoes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -440,8 +440,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -38.1, y: -46.4}
-  m_SizeDelta: {x: 544.37994, y: 30}
+  m_AnchoredPosition: {x: 0.6, y: -105}
+  m_SizeDelta: {x: 907.5396, y: 68.009796}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1091721438
 MonoBehaviour:
@@ -721,15 +721,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5968d43fc5f9d9645ac19e32f83ab1bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  typeJoint: 01000000020000000300000004000000060000000c000000070000000d000000080000000e000000110000001500000012000000160000001300000015000000
+  typeJoint: 01000000020000000300000004000000060000000c000000070000000d000000080000000e000000110000001500000012000000160000001300000017000000
   PrefabJoint: {fileID: 1808749634356760, guid: 44798c81ab336644f88e4840b1caf29f,
     type: 3}
   timerMensagem: {fileID: 140288130}
-  contadorAgachamentos: {fileID: 1091721438}
-  posInicial_Y:
-  - 0
-  - 0
-  - 0
+  contadorRepeticoes: {fileID: 1091721438}
 --- !u!1001 &2143048943
 PrefabInstance:
   m_ObjectHideFlags: 0

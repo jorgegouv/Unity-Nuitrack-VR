@@ -20,32 +20,24 @@ public class CodigoPesoMorto : MonoBehaviour
     GameObject[] CreatedJoint;
     public GameObject PrefabJoint;
 
-    /*const float scalK = 0.01f;
-    public bool validaPosicoes = true;
-    private float timerLePosicao = 5f;
-    public Text TimerPosicaoInicial;
-    public Text Agachamentos, Limite;
-
-    Vector3[] PosicoesIniciais = new Vector3[4];
-    public bool agachou = false;
-    public int agachamentoCounter = 0;*/
-
-    private const int nAgachamentos= 10; //agachamentos a fazer
+    private const int nRepeticoes= 10; //repetiçoes a fazer cada perna
     private const float tempoDescanso = 15f; //tempo de descanso entre as series
     private const int totalSeries = 3; //numero total de series a fazer
     private int serie = 1;
 
+    private bool trocouPerna = false;
+
     const float scalK = 0.01f;
     private bool isPosicaoInicialGuardada = false, isAgachado = false;
-    Vector3[] coordenadasJoints = new Vector3[6];
-    public Text timerMensagem, contadorAgachamentos;
+    Vector3[] coordenadasJoints = new Vector3[8];
+    public Text timerMensagem, contadorRepeticoes;
     private float timerComecar = 5f;
     
-    public float[] posInicial_Y = new float[3];
+    Vector3[] posInicial_Y = new Vector3[8];
     
 
 
-    private int agachamentos = nAgachamentos;
+    private int repeticoes = nRepeticoes;
     private float timerDescanso = tempoDescanso;
     void Start()
     {
@@ -66,7 +58,7 @@ public class CodigoPesoMorto : MonoBehaviour
         if (CurrentUserTracker.CurrentUser != 0)
         {
             nuitrack.Skeleton skeleton = CurrentUserTracker.CurrentSkeleton;
-            message = "Skeleton found";
+            message = "";
             
             for (int q = 0; q < typeJoint.Length; q++)
             {
@@ -75,32 +67,33 @@ public class CodigoPesoMorto : MonoBehaviour
                 CreatedJoint[q].transform.localPosition = newPosition;
             }
 
-            contadorAgachamentos.text = agachamentos.ToString(); //atualiza mensagem dos agachamentos
+            contadorRepeticoes.text = repeticoes.ToString(); //atualiza mensagem dos agachamentos
 
-            coordenadasJoints[0] = scalK * skeleton.GetJoint(nuitrack.JointType.Torso).ToVector3();
-            coordenadasJoints[1] = scalK * skeleton.GetJoint(nuitrack.JointType.Neck).ToVector3();
-            coordenadasJoints[2] = scalK * skeleton.GetJoint(nuitrack.JointType.RightHip).ToVector3();
-            coordenadasJoints[3] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftAnkle).ToVector3();
-            coordenadasJoints[4] = scalK * skeleton.GetJoint(nuitrack.JointType.RightWrist).ToVector3();
-            coordenadasJoints[5] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftWrist).ToVector3();
+            coordenadasJoints[0] = scalK * skeleton.GetJoint(nuitrack.JointType.Head).ToVector3(); //Cabeça
+            coordenadasJoints[1] = scalK * skeleton.GetJoint(nuitrack.JointType.Neck).ToVector3(); //Pescoço
+            coordenadasJoints[2] = scalK * skeleton.GetJoint(nuitrack.JointType.RightShoulder).ToVector3(); //ombro direito
+            coordenadasJoints[3] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftShoulder).ToVector3(); //ombro esquerdo
+            coordenadasJoints[4] = scalK * skeleton.GetJoint(nuitrack.JointType.Torso).ToVector3(); //torso
+            coordenadasJoints[5] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftElbow).ToVector3(); //braco direito
+            coordenadasJoints[6] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftElbow).ToVector3(); //braco esquerdo
+           
+            coordenadasJoints[7] = scalK * skeleton.GetJoint(nuitrack.JointType.RightKnee).ToVector3(); //joelho direito
+            coordenadasJoints[8] = scalK * skeleton.GetJoint(nuitrack.JointType.LeftKnee).ToVector3(); //joelho esquerdo
+
             
-            print("PERNA DIREITA: " + coordenadasJoints[2]);
             print("CABECA: " + coordenadasJoints[0]);
-            print("bRACO: " + coordenadasJoints[4]);
-        }
-    }
+            print("PESCOCO: " + coordenadasJoints[1]);
+            print("OMBRO DIREITO: " + coordenadasJoints[2]);
+            print("OMBRO ESQUERDO: " + coordenadasJoints[3]);
+            print("TORSO: " + coordenadasJoints[4]);
+            print("BRACO DIREITO: " + coordenadasJoints[5]);
+            
+            print("BRACO ESQUERDO: " + coordenadasJoints[6]);
+            print("JOELHO DIREITO: " + coordenadasJoints[7]);
+            print("JOELHO ESQUERDO: " + coordenadasJoints[8]);
 
 
-
-
-
-
-
-
-
-
-
-            /*if(!isPosicaoInicialGuardada){ //inicia a contagem decrescente para guardar a posição inicial e iniciar o exercício
+            if(!isPosicaoInicialGuardada){ //inicia a contagem decrescente para guardar a posição inicial e iniciar o exercício
                 timerComecar -= Time.deltaTime;;
                 timerMensagem.text = timerComecar.ToString();
                 
@@ -110,16 +103,24 @@ public class CodigoPesoMorto : MonoBehaviour
                 return;
             }
             
-            if(agachamentos > 0)
+            
+            if(repeticoes > 0)
             {
-                VerificaAgachamento(coordenadasJoints);
+                VerificaRepeticao(coordenadasJoints);
 
                 if(isAgachado){
                     ContaAgachamento(coordenadasJoints);
                 }
             }
             else{
-                DescansaProximaSerie();
+
+                if(trocouPerna)
+                    DescansaProximaSerie();
+                else{ //troca de perna
+                    repeticoes = nRepeticoes;
+                    trocouPerna = true;
+                    timerMensagem.text = "Vamos lá! Lentanta a perna direita";
+                }
                 
             }
 
@@ -133,16 +134,17 @@ public class CodigoPesoMorto : MonoBehaviour
     private void DescansaProximaSerie()
     {
         if(serie == totalSeries)
-            contadorAgachamentos.text = "Acabou o exercício!";
+            contadorRepeticoes.text = "Acabou o exercício!";
         else {
-            contadorAgachamentos.text = "Terminas-te a " + serie + " série!";
+            contadorRepeticoes.text = "Terminas-te a " + serie + " série\n Volta à levantar a perna esquerda!";
             
             timerDescanso -= Time.deltaTime;
-            timerMensagem.text = timerDescanso.ToString();
+            timerMensagem.text = "Descanso: " + timerDescanso.ToString();
 
             if(timerDescanso < 0){
-                timerMensagem.text = "Vamos lá!";
-                agachamentos = nAgachamentos;
+                timerMensagem.text = "Vamos lá! Lentanta a perna esquerda";
+                repeticoes = nRepeticoes;
+                trocouPerna = false;
                 serie++;
                 timerDescanso = tempoDescanso;
             }
@@ -153,39 +155,58 @@ public class CodigoPesoMorto : MonoBehaviour
     private void ContaAgachamento(Vector3[] coordenadasJoints)
     {
         //calcula se voltou as unidades iniciais
-        for(int i=0; i<3;i++){
-            float posDelta = posInicial_Y[i] - coordenadasJoints[i].y;
+        for(int i=0; i<6;i++){
+            float posDeltaY = posInicial_Y[i].y - coordenadasJoints[i].y;
+            float posDeltaZ = posInicial_Y[i].z - coordenadasJoints[i].z;
             
-            if(posDelta > 0.5f)
+            if(posDeltaY > 0.5f && posDeltaZ > 0.5f)
                 return;
+        }
+
+        if(trocouPerna)
+        {
+            if(posInicial_Y[8].y - coordenadasJoints[8].y > 1.0f && posInicial_Y[8].z - coordenadasJoints[8].z > 1.0f) return; //mexeu a perna esquerda nao conta
+        }
+        else{
+            if(posInicial_Y[7].y - coordenadasJoints[7].y > 1.0f && posInicial_Y[7].z - coordenadasJoints[7].z > 1.0f) return; //mexeu a perna direita nao conta
         }
         
         isAgachado = false;
-        agachamentos--;
+        repeticoes--;
     }
 
-    private void VerificaAgachamento(Vector3[] coordenadasJoints)
+    private void VerificaRepeticao(Vector3[] coordenadasJoints)
     {
-        //calcula quantas unidades desceu
-        for(int i=0; i<3;i++){
-            float posDelta = posInicial_Y[i] - coordenadasJoints[i].y;
+        //verifica se desceu as unidades necessárias no y e no z
+        for(int i=0; i<6;i++){
+            float posDeltaY = posInicial_Y[i].y - coordenadasJoints[i].y;
+            float posDeltaZ = posInicial_Y[i].z - coordenadasJoints[i].z;
             
-            if(posDelta < 3.0f)
+            if(posDeltaY < 5.0f && posDeltaZ < 5.0f)
                 return;
         }
+
+        if(trocouPerna)
+        {
+            if(posInicial_Y[8].y - coordenadasJoints[8].y > 1.0f && posInicial_Y[8].z - coordenadasJoints[8].z > 1.0f) return; //mexeu a perna esquerda nao conta
+        }
+        else{
+            if(posInicial_Y[7].y - coordenadasJoints[7].y > 1.0f && posInicial_Y[7].z - coordenadasJoints[7].z > 1.0f) return; //mexeu a perna direita nao conta
+        }
+
         
         isAgachado = true;
     }
 
     private void GuardaPosicaoInicial(Vector3[] coordenadasJoints)
     {
-        for(int i=0; i<3;i++){ // cabeça; pescoço; ombro direito; ombro esquerdo
-            posInicial_Y[i] = coordenadasJoints[i].y;
+        for(int i=0; i<7;i++){ // cabeça; pescoço; ombro direito; ombro esquerdo
+            posInicial_Y[i] = coordenadasJoints[i];
         }
 
-        timerMensagem.text = "Vamos lá!";
+        timerMensagem.text = "Vamos lá! Levanta a perna Esquerda";
         isPosicaoInicialGuardada = true;
-    }*/
+    }
 
 
 

@@ -20,16 +20,6 @@ public class NativeAvatar : MonoBehaviour
     GameObject[] CreatedJoint;
     public GameObject PrefabJoint;
 
-    /*const float scalK = 0.01f;
-    public bool validaPosicoes = true;
-    private float timerLePosicao = 5f;
-    public Text TimerPosicaoInicial;
-    public Text Agachamentos, Limite;
-
-    Vector3[] PosicoesIniciais = new Vector3[4];
-    public bool agachou = false;
-    public int agachamentoCounter = 0;*/
-
     private const int nAgachamentos= 10; //agachamentos a fazer
     private const float tempoDescanso = 15f; //tempo de descanso entre as series
     private const int totalSeries = 3; //numero total de series a fazer
@@ -66,7 +56,7 @@ public class NativeAvatar : MonoBehaviour
         if (CurrentUserTracker.CurrentUser != 0)
         {
             nuitrack.Skeleton skeleton = CurrentUserTracker.CurrentSkeleton;
-            message = "Skeleton found";
+            message = "";
             
             for (int q = 0; q < typeJoint.Length; q++)
             {
@@ -120,7 +110,7 @@ public class NativeAvatar : MonoBehaviour
             contadorAgachamentos.text = "Terminas-te a " + serie + " série!";
             
             timerDescanso -= Time.deltaTime;
-            timerMensagem.text = timerDescanso.ToString();
+            timerMensagem.text = "Descanso:" + timerDescanso.ToString();
 
             if(timerDescanso < 0){
                 timerMensagem.text = "Vamos lá!";
